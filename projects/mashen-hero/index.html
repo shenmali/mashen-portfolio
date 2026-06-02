@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>mashen.dev — wake up</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="hero.css" />
+<link rel="stylesheet" href="portfolio.css" />
+</head>
+<body>
+<div id="root"></div>
+
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100" height="100" fill="#020402"/>
+    <g fill="none" stroke="#39ff88" stroke-width="2">
+      <circle cx="50" cy="50" r="6" fill="#39ff88"/>
+      <circle cx="26" cy="30" r="3"/><circle cx="74" cy="28" r="3"/>
+      <circle cx="22" cy="68" r="3"/><circle cx="78" cy="70" r="3"/>
+      <line x1="50" y1="50" x2="26" y2="30"/><line x1="50" y1="50" x2="74" y2="28"/>
+      <line x1="50" y1="50" x2="22" y2="68"/><line x1="50" y1="50" x2="78" y2="70"/>
+    </g>
+  </svg>
+</template>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="shader-bg.jsx"></script>
+<script type="text/babel" src="layers.jsx"></script>
+<script type="text/babel" src="hero.jsx"></script>
+<script type="text/babel" src="content.jsx"></script>
+<script type="text/babel" src="sections.jsx"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "accent": "#39ff88",
+  "intensity": 65,
+  "speed": 0.9,
+  "lang": "en"
+}/*EDITMODE-END*/;
+
+function hexToRgbStr(hex) {
+  const h = hex.replace("#", "");
+  const full = h.length === 3 ? h.split("").map(c => c + c).join("") : h;
+  const n = parseInt(full, 16);
+  return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`;
+}
+
+const IconNpc = () => (
+  <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="1.4">
+    <circle cx="8" cy="5" r="2.6" /><path d="M3 14c0-2.8 2.2-4.5 5-4.5s5 1.7 5 4.5" />
+  </svg>
+);
+const IconSu = () => (
+  <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="1.4">
+    <path d="M8 1.5l5 2v4c0 3.2-2.1 5.4-5 6.5C5.1 12.9 3 10.7 3 7.5v-4l5-2z" />
+    <path d="M5.8 8l1.6 1.6L10.4 6" />
+  </svg>
+);
+
+function App() {
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  const reduced = useRef(typeof matchMedia !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches).current;
+
+  const [awake, setAwake] = useState(reduced);
+  const [bootKey, setBootKey] = useState(0);
+  const [su, setSu] = useState(false);
+  const [flash, setFlash] = useState(false);
+
+  const copy = HERO_COPY[t.lang] || HERO_COPY.en;
+  const accent = t.accent || "#39ff88";
+  const intensity = Math.max(0.1, (t.intensity || 65) / 100);
+  const speed = t.speed || 1;
+  const power = su ? 1 : 0;
+
+  const flip = useCallback((toSu) => {
+    setFlash(true);
+    setSu(toSu);
+    setTimeout(() => setFlash(false), 560);
+  }, []);
+
+  // keyboard: ESC replays boot, Enter/Space toggles access
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") { setSu(false); setAwake(false); setBootKey(k => k + 1); }
+      else if ((e.key === "Enter" || e.key === " ") && awake) { e.preventDefault(); flip(!su); }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [awake, su, flip]);
+
+  // lock page scroll during boot
+  useEffect(() => {
+    document.body.style.overflow = awake ? "" : "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, [awake]);
+
+  const nav = (window.CONTENT && window.CONTENT.ui[t.lang] && window.CONTENT.ui[t.lang].nav) || { focus: "Focus", work: "Experience", repos: "Code", contact: "Contact" };
+  const stageStyle = { "--accent": accent, "--accent-rgb": hexToRgbStr(accent) };
+
+  return (
+    <div className={"root" + (flash ? " flashing" : "")} style={stageStyle}>
+      <div className="stage" aria-hidden="true">
+        <ShaderBG accent={accent} intensity={intensity} power={power} speed={speed} />
+        <NodeGraph accent={accent} intensity={intensity} power={power} speed={speed} />
+        <MatrixRain accent={accent} intensity={intensity} power={power} speed={speed} />
+        <div className="layer layer-scan" />
+        <div className="layer layer-vignette" />
+        <div className="layer layer-aberration" />
+      </div>
+
+      {!awake && (
+        <div className="boot">
+          <BootSequence key={bootKey} copy={copy} reduced={reduced} onDone={() => setAwake(true)} />
+        </div>
+      )}
+
+      <div className="page">
+        <nav className="topnav">
+          <span className="brand">MASHEN.DEV</span>
+          <div className="links">
+            <a href="#focus">{nav.focus}</a>
+            <a href="#work">{nav.work}</a>
+            <a href="#repos">{nav.repos}</a>
+            <a href="#contact">{nav.contact}</a>
+          </div>
+          <span className="status"><span className="dot" />{copy.statusOnline}</span>
+        </nav>
+
+        <header className={"hero" + (awake ? " in" : "")}>
+          <div className="hero-grid">
+            <div className="hero-left">
+              <div className="eyebrow">{copy.eyebrow}</div>
+              <p className="lead-line">{copy.line1}</p>
+              <h1 className="headline">
+                {copy.q_or}{" "}
+                <em className="npc-word">{copy.q_npc}</em>{" "}
+                {copy.q_dash}{" "}
+                <em className={"accent su-word" + (su ? " armed" : "")} data-text={copy.q_su}>{copy.q_su}</em>{copy.q_end}
+              </h1>
+              <p className="kicker">
+                {copy.kicker_a} <b>{copy.kicker_b}</b> — <span className="hl">{copy.kicker_c}</span>
+              </p>
+
+              <div className="access">
+                <div className="access-label">{copy.accessLabel}<span style={{ color: "var(--accent)" }}>›</span></div>
+                <div className={"access-switch" + (su ? " su" : "")} role="tablist" aria-label="access level">
+                  <div className="access-thumb" />
+                  <div className={"access-opt" + (!su ? " on" : "")} onClick={() => flip(false)} role="tab" aria-selected={!su}>
+                    <span className="ic"><IconNpc /></span>{copy.npcLabel}
+                  </div>
+                  <div className={"access-opt" + (su ? " on" : "")} onClick={() => flip(true)} role="tab" aria-selected={su}>
+                    <span className="ic"><IconSu /></span>{copy.suLabel}
+                  </div>
+                </div>
+                <div className="access-hint">
+                  {su ? <span className="grant">{copy.suHint}</span> : copy.npcHint}
+                </div>
+              </div>
+
+              {su && (
+                <div className="cta-row show">
+                  <a className="btn" href="mailto:muhalishen@gmail.com">{copy.cta1}</a>
+                  <a className="btn ghost" href="#focus">{copy.cta2}</a>
+                </div>
+              )}
+            </div>
+
+            <div className="hero-right">
+              <LiveConsole copy={copy} power={power} intensity={intensity} speed={speed} />
+            </div>
+          </div>
+
+          <div className="hero-meta">
+            <div className="item"><span className="k">NOW</span><span className="v">{copy.metaNow}</span></div>
+            <div className="item"><span className="k">BASE</span><span className="v">{copy.metaBase}</span></div>
+            <div className="item"><span className="k">PRIV</span><span className={"v" + (su ? " acc" : "")}>{su ? copy.privSu : copy.privNpc}</span></div>
+            <div className="avail-cue"><span className="bar" />{copy.avail}</div>
+          </div>
+        </header>
+
+        <PortfolioSections lang={t.lang} />
+      </div>
+
+      <TweaksPanel title="Tweaks">
+        <TweakSection label="Scene" />
+        <TweakSlider label="Animation energy" value={t.intensity} min={10} max={100} step={5} unit="%"
+                     onChange={(v) => setTweak("intensity", v)} />
+        <TweakSlider label="Speed" value={t.speed} min={0.4} max={2} step={0.1} unit="×"
+                     onChange={(v) => setTweak("speed", v)} />
+        <TweakSection label="Signal" />
+        <TweakColor label="Accent" value={t.accent}
+                    options={["#39ff88", "#19f0ff", "#c08bff", "#ffb13d"]}
+                    onChange={(v) => setTweak("accent", v)} />
+        <TweakRadio label="Locale" value={t.lang} options={["en", "tr", "nl"]}
+                    onChange={(v) => setTweak("lang", v)} />
+      </TweaksPanel>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

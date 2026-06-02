@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>mashen.dev — index</title>
+<meta name="description" content="M. Ali ŞEN — AI/ML Engineer. Agentic frameworks, generative pipelines, automation that thinks." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #020402;
+    --text: #e8f3ec;
+    --muted: #7f9488;
+    --muted-2: #506056;
+    --accent: #39ff88;
+    --accent-rgb: 57, 255, 136;
+    --line: rgba(57, 255, 136, 0.16);
+    --line-2: rgba(57, 255, 136, 0.32);
+    --line-3: rgba(57, 255, 136, 0.58);
+    --mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+    --sans: Inter, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  ::selection { background: rgba(var(--accent-rgb), 0.28); color: #fff; }
+  a { color: inherit; text-decoration: none; }
+
+  /* backdrop: matrix rain + scrim */
+  #rain { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.5; mix-blend-mode: screen; pointer-events: none; }
+  .scrim { position: fixed; inset: 0; z-index: 1; pointer-events: none;
+    background: radial-gradient(ellipse at 50% 30%, rgba(7,18,11,0.55) 0%, rgba(2,4,2,0.92) 70%);
+  }
+  .scan { position: fixed; inset: 0; z-index: 2; pointer-events: none; opacity: 0.35;
+    background: repeating-linear-gradient(to bottom, transparent 0, transparent 2px, rgba(0,0,0,0.30) 3px, transparent 4px);
+  }
+
+  .wrap { position: relative; z-index: 5; max-width: 1180px; margin: 0 auto; padding: clamp(28px, 6vw, 80px) clamp(20px, 5vw, 64px); }
+
+  header { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.16em; }
+  .brand { color: var(--accent); font-weight: 500; text-shadow: 0 0 18px rgba(var(--accent-rgb),0.45); }
+  .status { color: var(--muted); display: flex; align-items: center; gap: 9px; text-transform: uppercase; font-size: 10.5px; }
+  .status .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); animation: pulse 1.8s infinite; }
+  @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(var(--accent-rgb),0.55)} 70%{box-shadow:0 0 0 8px rgba(var(--accent-rgb),0)} 100%{box-shadow:0 0 0 0 rgba(var(--accent-rgb),0)} }
+
+  .intro { margin: clamp(48px, 9vh, 100px) 0 clamp(36px, 6vh, 64px); }
+  .eyebrow { font-family: var(--mono); font-size: clamp(10px, 0.95vw, 12px); color: var(--accent);
+    letter-spacing: 0.32em; text-transform: uppercase; display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+  .eyebrow::before { content: ""; width: 26px; height: 1px; background: var(--line-3); }
+  h1 { font-family: var(--sans); font-weight: 500; font-size: clamp(36px, 6.5vw, 88px); line-height: 0.95;
+    letter-spacing: -0.04em; margin: 0; max-width: 18ch; text-wrap: balance; }
+  h1 em { font-style: normal; color: var(--accent); text-shadow: 0 0 44px rgba(var(--accent-rgb),0.4); }
+  .lede { font-size: clamp(14px, 1.5vw, 18px); color: var(--muted); line-height: 1.6; max-width: 46rem; margin: 24px 0 0; }
+  .lede b { color: var(--text); font-weight: 600; }
+
+  .sec-head { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px; margin-bottom: 26px; }
+  .sec-head .tag { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.22em; color: var(--accent); text-transform: uppercase; white-space: nowrap; }
+  .sec-head .tag::before { content: "§ "; color: var(--muted-2); }
+  .sec-head .rule { height: 1px; background: repeating-linear-gradient(90deg, var(--line-2) 0 6px, transparent 6px 12px); }
+  .sec-head .count { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.12em; white-space: nowrap; }
+
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+  .card { position: relative; background: rgba(5,11,7,0.6); padding: clamp(22px,3vw,30px) clamp(22px,3vw,28px); display: flex; flex-direction: column; transition: background 180ms; min-height: 200px; }
+  .card::before { content: ""; position: absolute; top: 0; left: 0; height: 2px; width: 0; background: var(--accent); box-shadow: 0 0 10px var(--accent); transition: width 320ms ease; }
+  .card.live:hover { background: rgba(var(--accent-rgb),0.055); }
+  .card.live:hover::before { width: 100%; }
+  .card .top { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .card .idx { font-family: var(--mono); font-size: 10px; color: var(--muted-2); letter-spacing: 0.1em; }
+  .card .badge { margin-left: auto; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 3px 8px; border: 1px solid var(--line-2); color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+  .card .badge .d { width: 5px; height: 5px; border-radius: 50%; background: var(--muted); }
+  .card.live .badge { color: var(--accent); border-color: var(--line-3); }
+  .card.live .badge .d { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+  .card h3 { font-family: var(--mono); font-size: clamp(16px,1.7vw,20px); font-weight: 500; color: var(--text); margin: 0 0 8px; display: flex; align-items: center; gap: 10px; }
+  .card h3 .arr { font-size: 14px; color: var(--muted-2); transition: transform 180ms, color 180ms; }
+  .card.live:hover h3 .arr { color: var(--accent); transform: translate(3px,-3px); }
+  .card p { font-size: 13px; line-height: 1.62; color: var(--muted); margin: 0 0 16px; }
+  .card .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+  .chip { font-family: var(--mono); font-size: 9.5px; padding: 4px 8px; border: 1px solid var(--line); color: var(--muted); letter-spacing: 0.08em; background: rgba(3,6,4,0.6); }
+  .card .url { font-family: var(--mono); font-size: 10.5px; color: var(--muted-2); letter-spacing: 0.06em; margin-top: 14px; }
+  .card.soon { opacity: 0.62; }
+  .card.soon h3 .arr { display: none; }
+
+  footer { margin-top: clamp(48px, 8vh, 88px); padding-top: 28px; border-top: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    font-family: var(--mono); font-size: 10.5px; color: var(--muted-2); letter-spacing: 0.1em; }
+  footer a:hover { color: var(--accent); }
+  .links { display: flex; gap: 18px; }
+
+  @media (prefers-reduced-motion: reduce) { .status .dot { animation: none; } }
+</style>
+</head>
+<body>
+<canvas id="rain" aria-hidden="true"></canvas>
+<div class="scrim"></div>
+<div class="scan"></div>
+
+<div class="wrap">
+  <header>
+    <span class="brand">MASHEN.DEV</span>
+    <span class="status"><span class="dot"></span>system // online</span>
+  </header>
+
+  <section class="intro">
+    <div class="eyebrow">M. ALİ ŞEN — AI / ML ENGINEER · GENERATIVE · AGENTIC</div>
+    <h1>I build the layer they only get to <em>use</em>.</h1>
+    <p class="lede">Agentic frameworks, generative pipelines, automation that thinks. Below is the live index of prototypes — each one ships on its own <b>subdomain</b>.</p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="tag">Projects</span>
+      <span class="rule"></span>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <footer>
+    <span>© <span id="yr"></span> M. Ali ŞEN · mashen.dev</span>
+    <span class="links">
+      <a href="https://github.com/shenmali" target="_blank" rel="noopener noreferrer">github</a>
+      <a href="https://linkedin.com/in/alimshen" target="_blank" rel="noopener noreferrer">linkedin</a>
+      <a href="mailto:muhalishen@gmail.com">email</a>
+    </span>
+  </footer>
+</div>
+
+<script>
+  // ── PROJECT REGISTRY ──────────────────────────────────────────────────────
+  // Add a new prototype here. Convention: a folder at projects/<slug>/index.html
+  // deployed as its own Cloudflare Pages project at https://<slug>.mashen.dev
+  // status: "live" (deployed) · "soon" (folder exists, not yet deployed)
+  const PROJECTS = [
+    {
+      slug: "mashen-hero",
+      title: "Wake Up",
+      desc: "Cinematic Matrix-style AI/ML portfolio hero — WebGL shader, agentic node-graph, live console, and an NPC ⟷ SuperUser access toggle. Full scrolling portfolio underneath.",
+      tags: ["WebGL", "React", "Canvas", "Agentic"],
+      status: "live",
+    },
+    // { slug: "next-project", title: "…", desc: "…", tags: [], status: "soon" },
+  ];
+
+  // ── render ────────────────────────────────────────────────────────────────
+  const grid = document.getElementById("grid");
+  const pad2 = (n) => String(n).padStart(2, "0");
+  grid.innerHTML = PROJECTS.map((p, i) => {
+    const href = p.status === "live" ? `https://${p.slug}.mashen.dev` : null;
+    const tag = href ? "a" : "div";
+    const attrs = href ? ` href="${href}"` : "";
+    return `<${tag} class="card ${p.status}"${attrs}>
+      <div class="top">
+        <span class="idx">${pad2(i + 1)}/${pad2(PROJECTS.length)}</span>
+        <span class="badge"><span class="d"></span>${p.status === "live" ? "live" : "soon"}</span>
+      </div>
+      <h3>${p.title}<span class="arr">↗</span></h3>
+      <p>${p.desc}</p>
+      <div class="tags">${p.tags.map((t) => `<span class="chip">${t}</span>`).join("")}</div>
+      <div class="url">${p.slug}.mashen.dev</div>
+    </${tag}>`;
+  }).join("");
+  document.getElementById("count").textContent = `${pad2(PROJECTS.length)} entries`;
+  document.getElementById("yr").textContent = new Date().getFullYear();
+
+  // ── matrix rain backdrop (vanilla, reduced-motion aware) ───────────────────
+  (function () {
+    const cvs = document.getElementById("rain");
+    const ctx = cvs.getContext("2d");
+    const chars = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホ0123456789<>{}[]()=+*/".split("");
+    const fontSize = 16;
+    let drops = [], cols = 0, dpr = 1;
+    const accent = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#39ff88";
+    const hexA = (a) => `${accent}${Math.floor(a * 255).toString(16).padStart(2, "0")}`;
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      cvs.width = innerWidth * dpr; cvs.height = innerHeight * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      cols = Math.floor(innerWidth / fontSize);
+      drops = Array.from({ length: cols }, () => Math.random() * -60);
+    }
+    function step() {
+      ctx.fillStyle = "rgba(2,4,2,0.085)";
+      ctx.fillRect(0, 0, innerWidth, innerHeight);
+      ctx.font = `${fontSize}px 'IBM Plex Mono', monospace`;
+      for (let i = 0; i < drops.length; i++) {
+        const x = i * fontSize, y = drops[i] * fontSize;
+        ctx.fillStyle = hexA(0.55);
+        ctx.fillText(chars[(Math.random() * chars.length) | 0], x, y);
+        ctx.fillStyle = hexA(0.28);
+        ctx.fillText(chars[(Math.random() * chars.length) | 0], x, y - fontSize);
+        if (y > innerHeight && Math.random() > 0.975) drops[i] = 0;
+        drops[i] += 1;
+      }
+    }
+    resize();
+    addEventListener("resize", resize);
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) {
+      drops = Array.from({ length: cols }, () => Math.random() * (innerHeight / fontSize));
+      for (let n = 0; n < 60; n++) step();
+    } else {
+      let last = 0;
+      (function tick(t) { if (t - last > 60) { last = t; step(); } requestAnimationFrame(tick); })(0);
+    }
+  })();
+</script>
+</body>
+</html>
